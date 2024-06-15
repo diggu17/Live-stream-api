@@ -43,7 +43,7 @@ const login = async(req,res)=>{
             return res.status(400).json({message: 'Incorrect Password'});
         }
         const token = jwt.sign({email:existingUser.email, id: existingUser._id}, SECRET_KEY);
-        res.status(201).json({user: result , token:token});
+        res.status(201).json({user: existingUser , token:token});
     }
     catch(error){
         console.log(error);
