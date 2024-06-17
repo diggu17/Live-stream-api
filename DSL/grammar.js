@@ -20,32 +20,19 @@ class Comparison extends ASTNode {
     }
 }
 
-class Addition extends ASTNode {
-    constructor(left,operator, right) {
+class ValueNode extends ASTNode {
+    constructor(value) {
         super();
-        this.left = left;
-        this.operator= operator
-        this.right = right;
+        this.value = value;
     }
 }
 
-class SUBTRACTION extends ASTNode {
-    constructor(left,operator, right) {
-        super();
-        this.left = left;
-        this.operator= operator
-        this.right = right;
-    }
-}
-
-class MULTIPLICATION extends ASTNode {
-    constructor(left,operator, right) {
-        super();
-        this.left = left;
-        this.operator= operator
-        this.right = right;
-    }
-}
+// Export AST Node Classes
+export {
+    FunctionCall,
+    Comparison,
+    ValueNode,
+};
 
 // Parser Class
 class Parser {
@@ -83,17 +70,17 @@ class Parser {
         while (this.tokens[this.position] && this.tokens[this.position].type === 'PLUS') {
             this.position++; // Consume '+'
             const right = this.parseExpression();
-            left = new Addition(left,"+", right);
+            left = new Comparison(left, "+", right);
         }
         while (this.tokens[this.position] && this.tokens[this.position].type === 'MINUS') {
-            this.position++; // Consume '+'
+            this.position++; // Consume '-'
             const right = this.parseExpression();
-            left = new SUBTRACTION(left,"-", right);
+            left = new Comparison(left, "-", right);
         }
         while (this.tokens[this.position] && this.tokens[this.position].type === 'MUL') {
-            this.position++; // Consume '+'
+            this.position++; // Consume '*'
             const right = this.parseExpression();
-            left = new MULTIPLICATION(left,"*", right);
+            left = new Comparison(left, "*", right);
         }
 
         return left;
@@ -101,12 +88,13 @@ class Parser {
 
     parseExpression() {
         const token = this.tokens[this.position];
+        console.log(token);
 
         if (token.type === 'FUNCTION') {
             return this.parseFunctionCall();
         } else if (token.type === 'NUMBER' || token.type === 'IDENTIFIER') {
             this.position++;
-            return token;
+            return new ValueNode(token.value); // Wrap the value in a ValueNode
         } else {
             throw new Error(`Unexpected token: ${token.type}`);
         }
@@ -115,27 +103,30 @@ class Parser {
     parseFunctionCall() {
         const functionName = this.tokens[this.position].value;
         this.position++; // Consume function name
-
+    
         if (this.tokens[this.position].type !== 'LPAREN') {
             throw new Error("Expected '(' after function name");
         }
         this.position++; // Consume '('
-
+    
         const args = [];
         while (this.tokens[this.position].type !== 'RPAREN') {
-            if (this.tokens[this.position].type === 'IDENTIFIER') {
-                args.push(this.tokens[this.position].value);
-                this.position++; // Consume identifier
+            if (this.tokens[this.position].type === 'IDENTIFIER' || this.tokens[this.position].type === 'NUMBER') {
+                args.push(new ValueNode(this.tokens[this.position].value));
+                this.position++; // Consume identifier or number
             } else if (this.tokens[this.position].type === 'COMMA') {
                 this.position++; // Consume ','
+            } else if (this.tokens[this.position].type === 'FUNCTION') {
+                args.push(this.parseFunctionCall());
             } else {
                 throw new Error(`Unexpected token in function call: ${this.tokens[this.position].type}`);
             }
         }
         this.position++; // Consume ')'
-
+    
         return new FunctionCall(functionName, args);
     }
+    
 
     parseOperator() {
         const token = this.tokens[this.position];
@@ -149,26 +140,14 @@ class Parser {
     }
 }
 
-// Usage example:
-// const input = "rule count('a') > count('b') end";
-// const lexer = new Lexer(input);
-// const tokens = lexer.tokenize();
-// const parser = new Parser(tokens);
-// const ast = parser.parse();
-// console.log(JSON.stringify(ast, null, 2));
-
-// const input2 = "rule count('a') >= sum('b') + sum('c') end";
-// const lexer2 = new Lexer(input2);
-// const tokens2 = lexer2.tokenize();
-// const parser2 = new Parser(tokens2);
-// const ast2 = parser2.parse();
-// console.log(JSON.stringify(ast2, null, 2));
-
-const input3 = "rule count('a') >= sum('b') * sum('c') end";
+// Example usage
+const input3 = "rule max(4,count('b')) >= count('a') end";
+// const input3 = "rule count('a') > 4 end";
+// const input3 = "rule count('a') > count('b') * count('c') end";
 const lexer3 = new Lexer(input3);
 const tokens3 = lexer3.tokenize();
 const parser3 = new Parser(tokens3);
 const ast3 = parser3.parse();
 console.log(JSON.stringify(ast3, null, 2));
 
-export default Parser;
+export default ast3;

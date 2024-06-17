@@ -6,7 +6,7 @@ class Lexer {
         this.tokenSpecs = [
             { type: 'RULE_START', regex: /rule/i },
             { type: 'RULE_END', regex: /end/i },
-            { type: 'FUNCTION', regex: /(count|sum)/i },
+            { type: 'FUNCTION', regex: /(count|sum|min|max)/i },
             { type: 'LPAREN', regex: /\(/ },
             { type: 'RPAREN', regex: /\)/ },
             { type: 'COMMA', regex: /,/ },
@@ -60,12 +60,12 @@ class Lexer {
 // const tokens = lexer.tokenize();
 // console.log(tokens);
 
-// const input2 = "rule count('a') >= sum('b') + sum('c') end";
+// const input2 = "rule max(4,count('a')) >= sum('b','c')  end";
 // const lexer2 = new Lexer(input2);
 // const tokens2 = lexer2.tokenize();
 // console.log(tokens2);
 
-// const input3 = "rule sum('a') >= 4 end";
+// const input3 = "rule count('a') >= 4 end";
 // const lexer3 = new Lexer(input3);
 // const tokens3 = lexer3.tokenize();
 // console.log(tokens3);
