@@ -1,7 +1,9 @@
 import express from "express";
-import signup from "../controller/userController.js";
+import { signup, login } from "../controller/userController.js";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import path from "path"; 
+import parsingDSL from "../DSL/interpreter.js";
 
 dotenv.config();
 const app = express();
@@ -9,6 +11,7 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.resolve("public"))); 
 
 const uri = process.env.MONGODB_CONNECTION_URL;
 
@@ -22,19 +25,33 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     });
 
 app.get("/", (req, res) => {
-    res.send("<h1>Welcome to home page</h1>");
+    res.sendFile(path.resolve("public/index.html")); 
 });
 
 app.get("/signup", (req, res) => {
-    res.send("<h1>Welcome to Signup page</h1>");
+    res.sendFile(path.resolve("public/signup.html"));
 });
 
 app.post("/signup", signup);
 
 app.get("/login", (req, res) => {
-    res.send("<h1>Welcome to Login page</h1>");
+    res.sendFile(path.resolve("public/login.html"));
 });
 
-// app.post("/login", login);
+app.post("/login", async (req, res) => {
+    await login(req, res);
+    res.redirect("/inside");
+});
+
+app.get("/inside", (req, res) => {
+    res.sendFile(path.resolve("public/query.html"));
+});
+
+app.post("/submit-query", (req, res) => {
+    const data = req.body;
+    parsingDSL(data);
+    // console.log(req.body);
+    res.redirect('/inside');
+});
 
 export default app;
