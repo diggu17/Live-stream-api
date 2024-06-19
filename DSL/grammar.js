@@ -81,7 +81,7 @@ class ASTNode {}
 
         parseExpression() {
             const token = this.tokens[this.position];
-            console.log(token);
+            // console.log(token);
 
             if (token.type === 'FUNCTION') {
                 return this.parseFunctionCall();

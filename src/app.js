@@ -4,9 +4,13 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path"; 
 import parsingDSL from "../DSL/interpreter.js";
+import { WebSocketServer } from "ws";
+import http from "http";
 
 dotenv.config();
 const app = express();
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -47,11 +51,24 @@ app.get("/inside", (req, res) => {
     res.sendFile(path.resolve("public/query.html"));
 });
 
-app.post("/submit-query", (req, res) => {
-    const data = req.body;
-    parsingDSL(data);
-    // console.log(req.body);
-    res.redirect('/inside');
+// app.post("/submit-query", (req, res) => {
+//     const data = req.body;
+//     // parsingDSL(data);
+//     console.log(req.body);
+//     res.redirect('/inside');
+// });
+
+wss.on('connection', (ws) => {
+    ws.on('message', (message) => {
+        const data = JSON.parse(message);
+        parsingDSL(data);
+        // Optionally, send a response back to the client
+        ws.send(JSON.stringify({ status: 'Query processed' }));
+    });
+
+    ws.on('close', () => {
+        console.log('WebSocket connection closed');
+    });
 });
 
-export default app;
+export default server;

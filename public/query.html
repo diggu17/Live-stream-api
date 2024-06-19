@@ -55,8 +55,36 @@
             <label for="string">String:</label>
             <input type="text" id="string" name="string" required>
 
-            <button type="submit">Submit</button>
+            <button type="submit" id ="submitBtn">Submit</button>
         </form>
     </div>
+
+    <script>
+        const ws = new WebSocket('ws://' + window.location.host);
+
+        ws.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        ws.onmessage = (event) => {
+            console.log('Message from server:', event.data);
+            // Reload the page upon receiving a response
+            window.location.reload();
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        document.getElementById('queryForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {
+                query: formData.get('query'),
+                string: formData.get('string')
+            };
+            ws.send(JSON.stringify(data));
+        });
+    </script>
 </body>
 </html>

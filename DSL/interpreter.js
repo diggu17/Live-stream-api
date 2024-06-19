@@ -14,14 +14,14 @@ class Interpreter {
     }
 
     interpret() {
-        console.log("Interpreting AST...");
-        console.log(this.ast);
+        // console.log("Interpreting AST...");
+        // console.log(this.ast);
         return this.evaluate(this.ast);
     }
 
     evaluate(node) {
         // Debug: Log the current node being evaluated
-        console.log("Evaluating node:", JSON.stringify(node, null, 2));
+        // console.log("Evaluating node:", JSON.stringify(node, null, 2));
 
         if (node instanceof FunctionCall) {
             return this.evaluateFunctionCall(node);
@@ -38,7 +38,7 @@ class Interpreter {
     evaluateFunctionCall(node) {
         const functionName = node.name;
         const args = node.args.map(arg => this.evaluate(arg)); // Evaluate each argument
-        console.log(`Function: ${functionName}, Args: ${args}`);
+        // console.log(`Function: ${functionName}, Args: ${args}`);
 
         if (functionName === 'count') {
             return this.count(args[0]);
@@ -119,3 +119,4 @@ function parsingDSL(data){
 // parsingDSL(data);
 
 export default parsingDSL;
+    
