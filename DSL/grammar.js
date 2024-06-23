@@ -1,141 +1,138 @@
-import Lexer from './lexer.js';
+const Lexer = require('./lexer.js');
 
 class ASTNode {}
 
-    class FunctionCall extends ASTNode {
-        constructor(name, args) {
-            super();
-            this.name = name;
-            this.args = args;
-        }
+class FunctionCall extends ASTNode {
+    constructor(name, args) {
+        super();
+        this.name = name;
+        this.args = args;
+    }
+}
+
+class Comparison extends ASTNode {
+    constructor(left, operator, right) {
+        super();
+        this.left = left;
+        this.operator = operator;
+        this.right = right;
+    }
+}
+
+class ValueNode extends ASTNode {
+    constructor(value) {
+        super();
+        this.value = value;
+    }
+}
+
+// Parser Class
+class Parser {
+    constructor(tokens) {
+        this.tokens = tokens;
+        this.position = 0;
     }
 
-    class Comparison extends ASTNode {
-        constructor(left, operator, right) {
-            super();
-            this.left = left;
-            this.operator = operator;
-            this.right = right;
+    parse() {
+        if (this.tokens[this.position].type !== 'RULE_START') {
+            throw new Error("Query must start with 'rule'");
         }
-    }
+        this.position++; // Consume 'RULE_START'
 
-    class ValueNode extends ASTNode {
-        constructor(value) {
-            super();
-            this.value = value;
-        }
-    }
+        const expression = this.parseExpression();
 
-
-    // Parser Class
-    class Parser {
-        constructor(tokens) {
-            this.tokens = tokens;
-            this.position = 0;
-        }
-
-        parse() {
-            if (this.tokens[this.position].type !== 'RULE_START') {
-                throw new Error("Query must start with 'rule'");
-            }
-            this.position++; // Consume 'RULE_START'
-
-            const comparison = this.parseComparison();
+        if (this.tokens[this.position] && this.isComparisonOperator(this.tokens[this.position].type)) {
+            const operator = this.parseOperator();
+            const right = this.parseExpression();
+            const comparison = new Comparison(expression, operator, right);
 
             if (this.tokens[this.position].type !== 'RULE_END') {
                 throw new Error("Query must end with 'end'");
             }
-
             return comparison;
         }
 
-        parseComparison() {
-            const left = this.parseOperation();
-            const operator = this.parseOperator();
-            const right = this.parseOperation();
-
-            return new Comparison(left, operator, right);
+        if (this.tokens[this.position].type !== 'RULE_END') {
+            throw new Error("Query must end with 'end'");
         }
 
-        parseOperation() {
-            let left = this.parseExpression();
+        return expression;
+    }
 
-            while (this.tokens[this.position] && this.tokens[this.position].type === 'PLUS') {
-                this.position++; // Consume '+'
-                const right = this.parseExpression();
-                left = new Comparison(left, "+", right);
-            }
-            while (this.tokens[this.position] && this.tokens[this.position].type === 'MINUS') {
-                this.position++; // Consume '-'
-                const right = this.parseExpression();
-                left = new Comparison(left, "-", right);
-            }
-            while (this.tokens[this.position] && this.tokens[this.position].type === 'MUL') {
-                this.position++; // Consume '*'
-                const right = this.parseExpression();
-                left = new Comparison(left, "*", right);
-            }
+    parseExpression() {
+        return this.parseOperation();
+    }
 
-            return left;
+    parseOperation() {
+        let left = this.parsePrimary();
+
+        while (this.tokens[this.position] && (this.tokens[this.position].type === 'PLUS' || this.tokens[this.position].type === 'MINUS' || this.tokens[this.position].type === 'MUL')) {
+            const operatorToken = this.tokens[this.position];
+            this.position++; // Consume operator
+            const right = this.parsePrimary();
+            left = new Comparison(left, operatorToken.value, right);
         }
 
-        parseExpression() {
-            const token = this.tokens[this.position];
-            // console.log(token);
+        return left;
+    }
 
-            if (token.type === 'FUNCTION') {
-                return this.parseFunctionCall();
-            } else if (token.type === 'NUMBER' || token.type === 'IDENTIFIER') {
-                this.position++;
-                return new ValueNode(token.value); // Wrap the value in a ValueNode
-            } else {
-                throw new Error(`Unexpected token: ${token.type}`);
-            }
-        }
+    parsePrimary() {
+        const token = this.tokens[this.position];
 
-        parseFunctionCall() {
-            const functionName = this.tokens[this.position].value;
-            this.position++; // Consume function name
-        
-            if (this.tokens[this.position].type !== 'LPAREN') {
-                throw new Error("Expected '(' after function name");
-            }
-            this.position++; // Consume '('
-        
-            const args = [];
-            while (this.tokens[this.position].type !== 'RPAREN') {
-                if (this.tokens[this.position].type === 'IDENTIFIER' || this.tokens[this.position].type === 'NUMBER') {
-                    args.push(new ValueNode(this.tokens[this.position].value));
-                    this.position++; // Consume identifier or number
-                } else if (this.tokens[this.position].type === 'COMMA') {
-                    this.position++; // Consume ','
-                } else if (this.tokens[this.position].type === 'FUNCTION') {
-                    args.push(this.parseFunctionCall());
-                } else {
-                    throw new Error(`Unexpected token in function call: ${this.tokens[this.position].type}`);
-                }
-            }
-            this.position++; // Consume ')'
-        
-            return new FunctionCall(functionName, args);
-        }
-        
-
-        parseOperator() {
-            const token = this.tokens[this.position];
-
-            if (token.type === 'GT' || token.type === 'GE' || token.type === 'LT' || token.type === 'EQ') {
-                this.position++;
-                return token.value;
-            } else {
-                throw new Error(`Unexpected operator: ${token.type}`);
-            }
+        if (token.type === 'FUNCTION') {
+            return this.parseFunctionCall();
+        } else if (token.type === 'NUMBER' || token.type === 'IDENTIFIER') {
+            this.position++;
+            return new ValueNode(token.value); // Wrap the value in a ValueNode
+        } else {
+            throw new Error(`Unexpected token: ${token.type}`);
         }
     }
 
-function generateParser(data){
-    
-    // const input3 = "rule count('a') > 4 end";
+    parseFunctionCall() {
+        const functionName = this.tokens[this.position].value;
+        this.position++; // Consume function name
+
+        if (this.tokens[this.position].type !== 'LPAREN') {
+            throw new Error("Expected '(' after function name");
+        }
+        this.position++; // Consume '('
+
+        const args = [];
+        while (this.tokens[this.position].type !== 'RPAREN') {
+            if (this.tokens[this.position].type === 'IDENTIFIER' || this.tokens[this.position].type === 'NUMBER') {
+                args.push(new ValueNode(this.tokens[this.position].value));
+                this.position++; // Consume identifier or number
+            } else if (this.tokens[this.position].type === 'COMMA') {
+                this.position++; // Consume ','
+            } else if (this.tokens[this.position].type === 'FUNCTION') {
+                args.push(this.parseFunctionCall());
+            } else {
+                throw new Error(`Unexpected token in function call: ${this.tokens[this.position].type}`);
+            }
+        }
+        this.position++; // Consume ')'
+
+        return new FunctionCall(functionName, args);
+    }
+
+    parseOperator() {
+        const token = this.tokens[this.position];
+
+        if (this.isComparisonOperator(token.type)) {
+            this.position++;
+            return token.value;
+        } else {
+            throw new Error(`Unexpected operator: ${token.type}`);
+        }
+    }
+
+    isComparisonOperator(type) {
+        return type === 'GT' || type === 'GE' || type === 'LT' || type === 'EQ' || type === 'LE';
+    }
+}
+
+function generateParser(data) {
     const input3 = data.query;
     const lexer3 = new Lexer(input3);
     const tokens3 = lexer3.tokenize();
@@ -147,18 +144,17 @@ function generateParser(data){
 
 // Example usage
 // const input3 = "rule max(4,count('b')) >= count('a') end";
-// const input3 = "rule count('a') > 4 end";
+// const input3 = "rule count('a') end";
 // const input3 = "rule count('a') > count('b') * count('c') end";
 // const input3 = data.query;
 // const lexer3 = new Lexer(input3);
 // const tokens3 = lexer3.tokenize();
 // const parser3 = new Parser(tokens3);
 // const ast3 = parser3.parse();
-// const ast = generateParser();
+// console.log(JSON.stringify(ast3, null, 2));
 
-export default generateParser;
-
-export  {
+module.exports = {
+    generateParser,
     FunctionCall,
     Comparison,
     ValueNode,

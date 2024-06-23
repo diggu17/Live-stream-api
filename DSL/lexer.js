@@ -11,6 +11,7 @@ class Lexer {
             { type: 'RPAREN', regex: /\)/ },
             { type: 'COMMA', regex: /,/ },
             { type: 'GE', regex: />=/ },
+            { type: 'LE', regex: /<=/},
             { type: 'GT', regex: />/ },
             { type: 'LT', regex: /</ },
             { type: 'EQ', regex: /==/ },
@@ -55,7 +56,7 @@ class Lexer {
 
 
 // Usage example:
-// const input = "rule count('a') > count('b') end";
+// const input = "rule count('a') end";
 // const lexer = new Lexer(input);
 // const tokens = lexer.tokenize();
 // console.log(tokens);
@@ -70,4 +71,4 @@ class Lexer {
 // const tokens3 = lexer3.tokenize();
 // console.log(tokens3);
 
-export default Lexer;
+module.exports = Lexer;

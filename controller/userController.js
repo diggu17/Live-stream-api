@@ -1,6 +1,6 @@
-import User from "../model/user.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+const {User} = require('../model/user.js');
+const {bcrypt} = require('bcrypt');
+const {jwt} = require('jsonwebtoken');
 
 const SECRET_KEY = "123456";
 
@@ -20,10 +20,8 @@ const signup = async (req, res) => {
             password: hashedPassword,
             username: username,
         });
-
-        const token = jwt.sign({ email: result.email, id: result._id }, SECRET_KEY, { expiresIn: '1h' });
-
-        res.status(201).json({ user: result, token: token });
+        res.status(201).send({ message: 'User registered successfully' });
+        
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Something went wrong" });
@@ -44,11 +42,12 @@ const login = async (req, res) => {
         }
 
         const token = jwt.sign({ email: existingUser.email, id: existingUser._id }, SECRET_KEY, { expiresIn: '1h' });
-        res.status(200).json({ user: existingUser, token: token });
+
+        return token;
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Something went wrong" });
     }
 };
 
-export { signup, login };
+module.exports  = { signup, login };

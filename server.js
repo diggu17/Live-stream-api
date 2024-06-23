@@ -1,5 +1,5 @@
-import server from './src/app.js'
-import DotEnv from "dotenv";
+const {server} = require( './src/app.js');
+const DotEnv =  require('dotenv');
 DotEnv.config();
 
 

@@ -1,10 +1,9 @@
-import generateParser from "./grammar.js";
-
-import {
+const {
+    generateParser,
     FunctionCall,
     Comparison,
     ValueNode,
-} from "./grammar.js";
+} = require('./grammar.js');
 
 
 class Interpreter {
@@ -46,6 +45,8 @@ class Interpreter {
             return this.sum(args[0]);
         } else if (functionName === 'max') {
             return this.max(args);
+        }else if (functionName === 'min') {
+            return this.min(args);
         } else {
             throw new Error(`Unknown function: ${functionName}`);
         }
@@ -71,6 +72,8 @@ class Interpreter {
                 return left * right;
             case '-':
                 return left - right;
+            case '<=':
+                return left <=right;
             default:
                 throw new Error(`Unknown operator: ${operator}`);
         }
@@ -86,10 +89,12 @@ class Interpreter {
         let cnt = 0;
         const characters = str.split("");
         characters.forEach((character) => {
-            if (character == arg) cnt++;
+            // console.log(typeof character, typeof arg);
+          if (character[0] === arg[1]) cnt=cnt+1;
         });
+        // console.log(cnt);
         return cnt;
-    }
+      }
 
     sum(arg) {
         const regex = new RegExp(arg, 'g');
@@ -103,6 +108,10 @@ class Interpreter {
 
     max(args) {
         return Math.max(...args);
+    }
+
+    min(args){
+        return Math.min(...args);
     }
 }
 
@@ -118,5 +127,4 @@ function parsingDSL(data){
 
 // parsingDSL(data);
 
-export default parsingDSL;
-    
+module.exports = {parsingDSL, Interpreter};

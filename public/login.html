@@ -58,5 +58,38 @@
             <button type="submit">Submit</button>
         </form>
     </div>
+    <script>
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Login failed');
+                }
+
+                const responseData = await response.json();
+                const token = responseData.token;
+
+                // Store token in localStorage (or sessionStorage)
+                localStorage.setItem('token', token);
+
+                // Redirect or perform actions after successful login
+                window.location.href = '/inside'; // Example redirect to another page
+            } catch (error) {
+                console.error('Login error:', error.message);
+                // Handle error (e.g., display error message to user)
+            }
+        }
+    </script>
 </body>
 </html>
