@@ -21,12 +21,12 @@ app.use(express.static(path.resolve("public")));
 const uri = process.env.MONGODB_CONNECTION_URL;
 const SECRET_KEY = "123456";
 
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        console.log("Database connected successfully");
+mongoose.connect(uri)
+    .then(async () => {
+        await console.log("Database connected successfully");
     })
-    .catch((err) => {
-        console.error(`Error in connecting Database. Err: ${err}`);
+    .catch(async (err) => {
+        await console.error(`Error in connecting Database. Err: ${err}`);
         process.exit(1);
     });
 
@@ -36,7 +36,9 @@ app.get("/signup", (req, res) => {
 });
 
 // Endpoint to handle signup POST request
-app.post("/signup", signup);
+app.post("/signup", async (req, res) => {
+    const pros = await signup(req,res);
+});
 
 // Endpoint to serve login page
 app.get("/login", (req, res) => {
@@ -48,7 +50,7 @@ app.post("/login", async (req, res) => {
     try {
         const token = await login(req, res);
         if (token) {
-            res.send({ token }); // Send the token to the client
+            res.send({ token }); 
         }
     } catch (error) {
         console.error(error);
@@ -73,12 +75,12 @@ const authenticateJWT = (req, res, next) => {
     }
 };
 
-app.get("/inside", (req, res) => {
+app.get("/inside",authenticateJWT, (req, res) => {
     res.sendFile(path.resolve("public/query.html"));
 });
 
 // Endpoint to handle query submission
-app.post("/submit-query", (req, res) => {
+app.post("/submit-query",authenticateJWT, (req, res) => {
     const data = req.body;
     parsingDSL(data);
     // console.log(req.body);
