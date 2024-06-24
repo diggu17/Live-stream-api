@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/diggu17/Live-stream-api#readme",
   "dependencies": {
+    "axios": "^1.7.2",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
@@ -34,7 +35,9 @@
     "@babel/core": "^7.24.7",
     "@babel/preset-env": "^7.24.7",
     "babel-jest": "^29.7.0",
+    "chai": "^5.1.1",
     "jest": "^29.7.0",
+    "mocha": "^10.4.0",
     "supertest": "^7.0.0"
   }
 }

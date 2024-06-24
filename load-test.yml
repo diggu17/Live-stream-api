@@ -1,0 +1,22 @@
+config:
+  target: 'http://localhost:3000' # Replace with your server's address
+  phases:
+    - duration: 1                 # Duration of the test in seconds
+      arrivalRate: 1000           # Number of requests per second
+      name: "Burst load test"
+scenarios:
+  - flow:
+      - get:
+          url: "/signup"
+      - post:
+          url: "/signup"
+          json:
+            username: "testuser"
+            password: "testpassword"
+      - get:
+          url: "/login"
+      - post:
+          url: "/login"
+          json:
+            username: "testuser"
+            password: "testpassword"

@@ -1,12 +1,12 @@
-const express =require('express');
+const express = require('express');
 const { signup, login } = require('../controller/userController.js');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path'); 
-const {parsingDSL} = require('../DSL/interpreter.js');
-const jwt = require('jsonwebtoken'); // import JWT library
+const { parsingDSL } = require('../DSL/interpreter.js');
 const { WebSocketServer } = require('ws');
 const http = require('http');
+const {authenticateJWT} =require('./jwt.js');
 
 dotenv.config();
 const app = express();
@@ -37,7 +37,7 @@ app.get("/signup", (req, res) => {
 
 // Endpoint to handle signup POST request
 app.post("/signup", async (req, res) => {
-    const pros = await signup(req,res);
+    const pros = await signup(req, res);
 });
 
 // Endpoint to serve login page
@@ -50,7 +50,7 @@ app.post("/login", async (req, res) => {
     try {
         const token = await login(req, res);
         if (token) {
-            res.send({ token }); 
+            res.status(200).json({ token });
         }
     } catch (error) {
         console.error(error);
@@ -58,32 +58,19 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// Middleware to authenticate JWT token
-const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (authHeader) {
-        const token = authHeader.split(' ')[1]; // Bearer <token>
-        jwt.verify(token, SECRET_KEY, (err, user) => {
-            if (err) {
-                return res.status(403).json({ message: 'Invalid token' });
-            }
-            req.user = user;
-            next();
-        });
-    } else {
-        res.status(401).json({ message: 'Access denied. No token provided.' });
-    }
-};
 
-app.get("/inside",authenticateJWT, (req, res) => {
+
+// Protect all routes except /signup and /login
+app.use(['/inside', '/submit-query'], authenticateJWT);
+
+app.get("/inside", (req, res) => {
     res.sendFile(path.resolve("public/query.html"));
 });
 
 // Endpoint to handle query submission
-app.post("/submit-query",authenticateJWT, (req, res) => {
+app.post("/submit-query", (req, res) => {
     const data = req.body;
     parsingDSL(data);
-    // console.log(req.body);
     res.redirect('/inside');
 });
 
@@ -103,4 +90,4 @@ wss.on('connection', (ws) => {
 });
 */
 
-module.exports = {server};
+module.exports = { server };
