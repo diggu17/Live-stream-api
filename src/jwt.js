@@ -3,11 +3,10 @@ const SECRET_KEY = "123456";
 
 // Middleware to authenticate JWT token
 const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers.Authorization;
-    console.log(authHeader);
+    const authHeader = req.headers.authorization;
+    // console.log(authHeader);
     if (authHeader) {
-        const token = authHeader.split(' ')[1]; // Bearer <token>
-        jwt.verify(token, SECRET_KEY, (err, user) => {
+        jwt.verify(authHeader, SECRET_KEY, (err, user) => {
             if (err) {
                 return res.status(403).json({ message: 'Invalid token' });
             }

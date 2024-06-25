@@ -121,7 +121,6 @@ function parsingDSL(data){
     // const inputString = "aaaabbbcder";
     const interpreter = new Interpreter(ast, inputString);
     const result = interpreter.interpret();
-    console.log("Interpretation result:", result);
     return result;
 }
 

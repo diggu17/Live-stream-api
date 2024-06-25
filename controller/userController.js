@@ -1,4 +1,4 @@
-const { User } = require('../model/user.js');
+const User = require('../model/user.js'); 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -37,12 +37,83 @@ const login = async (req, res) => {
             return res.status(400).json({ message: 'Incorrect password' });
         }
 
-        const token = jwt.sign({ email: existingUser.email, id: existingUser._id }, SECRET_KEY, { expiresIn: '1h' });
-        return token;
+        const token = jwt.sign({ email: existingUser.email, id: existingUser.username }, SECRET_KEY, { expiresIn: '1h' });
+        return res.status(200).json({ token });
     } catch (error) {
         console.error('Error during login:', error); // Log the error
         res.status(500).json({ message: "Something went wrong" });
     }
 };
 
-module.exports = { signup, login };
+const addingQ = async (req, res) => {
+    const { email, id, queryText,queryString } = req.body;
+    try {
+        const currentUser = await User.findOne({ email });
+        if (!currentUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const newQuery = { id, queryText, queryString};
+        currentUser.queries.push(newQuery);
+        await currentUser.save();
+
+        res.status(200).json({ message: "Query added successfully" });
+    } catch (error) {
+        console.error('Error during adding Query:', error); // Log the error
+        res.status(500).json({ message: "Something went wrong" });
+    }
+}
+
+const updateQ = async (req, res) => {
+    const { email, id, updatedText,updatedString } = req.body;
+    try {
+        const currentUser = await User.findOne({ email });
+        if (!currentUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const queryIndex = currentUser.queries.findIndex(query => query.id === id);
+        if (queryIndex === -1) {
+            return res.status(404).json({ message: "Query not found" });
+        }
+
+        const query = currentUser.queries;
+
+        query[queryIndex].queryText = updatedText;
+        query[queryIndex].queryString=updatedString;
+        await currentUser.save();
+
+        res.status(200).json({ message: "Query updated successfully" });
+    } catch (error) {
+        console.error('Error during updating Query:', error); // Log the error
+        res.status(500).json({ message: "Something went wrong" });
+    }
+}
+
+const deleteQ = async (req, res) => {
+    const { email, id } = req.body;
+    try {
+        const currentUser = await User.findOne({ email });
+        if (!currentUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Find the index of the query to be deleted
+        const queryIndex = currentUser.queries.findIndex(query => query.id === id);
+        if (queryIndex === -1) {
+            return res.status(404).json({ message: "Query not found" });
+        }
+
+        // Remove the query from the user's queries array
+        currentUser.queries.splice(queryIndex, 1);
+
+        // Save the updated user document
+        await currentUser.save();
+
+        res.status(200).json({ message: "Query deleted successfully" });
+    } catch (error) {
+        console.error('Error during deleting Query:', error); // Log the error
+        res.status(500).json({ message: "Something went wrong" });
+    }
+}
+
+
+module.exports = { signup, login, addingQ, updateQ, deleteQ};

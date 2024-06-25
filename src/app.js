@@ -1,5 +1,5 @@
 const express = require('express');
-const { signup, login } = require('../controller/userController.js');
+const { signup, login, addingQ, updateQ, deleteQ} = require('../controller/userController.js');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path'); 
@@ -7,6 +7,7 @@ const { parsingDSL } = require('../DSL/interpreter.js');
 const { WebSocketServer } = require('ws');
 const http = require('http');
 const {authenticateJWT} =require('./jwt.js');
+const User = require('../model/user.js'); 
 
 dotenv.config();
 const app = express();
@@ -16,7 +17,8 @@ const wss = new WebSocketServer({ server });
 // Middleware to parse JSON bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.resolve("public"))); 
+app.use(express.static(path.resolve("public")));
+app.use(['/inside', '/run-query','/addQ','/updateQ','/deleteQ'], authenticateJWT);
 
 const uri = process.env.MONGODB_CONNECTION_URL;
 const SECRET_KEY = "123456";
@@ -58,19 +60,46 @@ app.post("/login", async (req, res) => {
     }
 });
 
+app.post('/addQ',addingQ);
 
+app.post('/updateQ',updateQ);
 
-// Protect all routes except /signup and /login
-app.use(['/inside', '/submit-query'], authenticateJWT);
+app.post('/deleteQ',deleteQ);
 
 app.get("/inside", (req, res) => {
     res.sendFile(path.resolve("public/query.html"));
 });
 
 // Endpoint to handle query submission
-app.post("/submit-query", (req, res) => {
-    const data = req.body;
-    parsingDSL(data);
+app.post("/run-query", async (req, res) => {
+    const token = req.headers.authorization;
+    const parts = token.split('.');
+    const encodedPayload = parts[1];
+    const decodedPayload = Buffer.from(encodedPayload, 'base64').toString('utf-8');
+    const payloadObj = JSON.parse(decodedPayload);
+    let query;
+    try {
+        const currentUser = await User.findOne({ email: payloadObj.email });
+        if (!currentUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        query= currentUser.queries;
+    } catch (error) {
+        console.error('Error during getting Queries:', error); // Log the error
+        res.status(500).json({ message: "Something went wrong" });
+    }
+    const result=[];
+    query.forEach((obj)=>{
+        const data ={
+            query :obj.queryText,
+            string : obj.queryString
+        }
+        const tresult=parsingDSL(data)
+        console.log(`Interpretation result from query ${obj.id}:`, tresult);
+        result.push(tresult);
+    })
+
+    // console.log(result);
     res.redirect('/inside');
 });
 
