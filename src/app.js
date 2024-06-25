@@ -38,9 +38,7 @@ app.get("/signup", (req, res) => {
 });
 
 // Endpoint to handle signup POST request
-app.post("/signup", async (req, res) => {
-    const pros = await signup(req, res);
-});
+app.post("/signup", signup);
 
 // Endpoint to serve login page
 app.get("/login", (req, res) => {
@@ -48,17 +46,7 @@ app.get("/login", (req, res) => {
 });
 
 // Endpoint to handle login POST request
-app.post("/login", async (req, res) => {
-    try {
-        const token = await login(req, res);
-        if (token) {
-            res.status(200).json({ token });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Something went wrong" });
-    }
-});
+app.post("/login", login);
 
 app.post('/addQ',addingQ);
 
@@ -119,4 +107,4 @@ wss.on('connection', (ws) => {
 });
 */
 
-module.exports = { server };
+module.exports = { server,app };

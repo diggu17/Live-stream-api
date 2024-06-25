@@ -19,7 +19,7 @@ const signup = async (req, res) => {
         });
         res.status(200).json({ message: 'User registered successfully' });
     } catch (error) {
-        console.error('Error during signup:', error); // Log the error
+        console.error('Error during signup:', error); 
         res.status(500).json({ message: "Something went wrong" });
     }
 };
@@ -38,9 +38,10 @@ const login = async (req, res) => {
         }
 
         const token = jwt.sign({ email: existingUser.email, id: existingUser.username }, SECRET_KEY, { expiresIn: '1h' });
-        return res.status(200).json({ token });
+        res.status(200).json({ token });
+        return token;
     } catch (error) {
-        console.error('Error during login:', error); // Log the error
+        console.error('Error during login:', error); 
         res.status(500).json({ message: "Something went wrong" });
     }
 };
@@ -83,7 +84,7 @@ const updateQ = async (req, res) => {
 
         res.status(200).json({ message: "Query updated successfully" });
     } catch (error) {
-        console.error('Error during updating Query:', error); // Log the error
+        console.error('Error during updating Query:', error); 
         res.status(500).json({ message: "Something went wrong" });
     }
 }
@@ -107,7 +108,7 @@ const deleteQ = async (req, res) => {
 
         res.status(200).json({ message: "Query deleted successfully" });
     } catch (error) {
-        console.error('Error during deleting Query:', error); // Log the error
+        console.error('Error during deleting Query:', error);
         res.status(500).json({ message: "Something went wrong" });
     }
 }
