@@ -22,8 +22,8 @@ describe('User Signup', () => {
       };
   
       const response = await request(app).post('/signup').send(newUser);
-      expect(response.statusCode).toBe(400); // Expect bad request
-      expect(response.body).toHaveProperty('message'); // Expect error message
+      expect(response.statusCode).toBe(400); 
+      expect(response.body).toHaveProperty('message'); 
     });
   
     // Test case for missing email
@@ -34,8 +34,8 @@ describe('User Signup', () => {
       };
   
       const response = await request(app).post('/signup').send(newUser);
-      expect(response.statusCode).toBe(400); // Expect bad request
-      expect(response.body).toHaveProperty('message'); // Expect error message
+      expect(response.statusCode).toBe(400); 
+      expect(response.body).toHaveProperty('message'); 
     });
   
     // Test case for missing password
@@ -49,8 +49,7 @@ describe('User Signup', () => {
       expect(response.statusCode).toBe(400); // Expect bad request
       expect(response.body).toHaveProperty('message'); // Expect error message
     });
-  
-    // Add more test cases for other failure scenarios (e.g., username length restrictions, password complexity requirements)
+
   });
   
 
@@ -75,8 +74,8 @@ describe('User Login', () => {
       };
   
       const response = await request(app).post('/login').send(user);
-      expect(response.statusCode).toBe(400); // Expect bad request
-      expect(response.body).toHaveProperty('message'); // Expect error message
+      expect(response.statusCode).toBe(400); 
+      expect(response.body).toHaveProperty('message'); 
     });
   
     // Test case for missing email
@@ -86,10 +85,8 @@ describe('User Login', () => {
       };
   
       const response = await request(app).post('/login').send(user);
-      expect(response.statusCode).toBe(404); // Expect bad request
-      expect(response.body).toHaveProperty('message'); // Expect error message
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toHaveProperty('message');
     });
-  
-    // Add more test cases for other failure scenarios (e.g., invalid email format, missing password)
   });
   
