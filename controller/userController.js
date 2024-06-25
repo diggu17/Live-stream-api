@@ -101,11 +101,8 @@ const deleteQ = async (req, res) => {
         if (queryIndex === -1) {
             return res.status(404).json({ message: "Query not found" });
         }
-
-        // Remove the query from the user's queries array
         currentUser.queries.splice(queryIndex, 1);
 
-        // Save the updated user document
         await currentUser.save();
 
         res.status(200).json({ message: "Query deleted successfully" });
