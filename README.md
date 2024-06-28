@@ -8,11 +8,9 @@ The goal of this project is to provide a stable and adaptable platform that can 
 - [👩🏻‍💻 Features](#-features)
 - [🛠️ Tools & Technologies](#-tools)
 - [📥 Installation](#-installation)
-- [🚀 Usage](#-usage)
 - [📧 Endpoints](#-endpoints)
 - [🧪 Testing](#-testing)
 - [🖼️ Postman](#-images)
-- [📄 License](#-license)
 
 ## 🎯 Purpose
 This project's main objective is to offer a real-time, scalable data processing system that allows users to create custom classification rules. This project guarantees that user-defined rules may be applied promptly to incoming data, making the system ideal for a variety of real-world applications. It accomplishes this by integrating JWT for secure authentication, a strong database for rule storage, and real-time data streaming capabilities.
@@ -90,7 +88,7 @@ npm install
   ```
  - **running query by a user**:
   ```bash
-  http://{{host}}:{{port}}/run-query 
+  http://{{host}}:{{port}}/run-query  #running all rules 
   ```
 
 ## 🧪 Testing
@@ -100,6 +98,15 @@ Run below coomand to run unit tests , integration tests and see the code covarag
  ```
 
 ## 🖼️ Postman 
-
-
-            
+#### Creating a new User
+![Alt text](images/signup.png)
+#### Login a User
+![Alt text](images/login.png)
+#### Creating a New Rule
+![Alt text](images/Addingrule.png)
+#### Update a Rule
+![Alt text](images/Updatingrule.png)
+#### Delete a Rule
+![Alt text](images/deletingquery.png)
+#### Testing
+![Alt text](images/Testing.png)
