@@ -1,58 +1,97 @@
-TITLE: Real-time Data Classification API
+# TITLE: Real-time Data Classification API
 
-DESCRIPTION: API that processes a live stream of data, classifies it based on user-defined classification rules, and authenticates incoming requests using JWT tokens
+## DESCRIPTION: 
+The goal of this project is to provide a stable and adaptable platform that can analyze and categorize real-time data streams according to rules that the user defines. Utilising state-of-the-art backend technology and web technologies, it guarantees accurate and rapid data processing. Because of this, the platform is perfect for applications that need efficient data handling and real-time decision-making.
 
-    1: Project Initialization:
-        i. Express.js and Node.js is used to initialize the project
-        ii. Installed packages for JWT, database connectivity, and WebSocket/SSE, express, 
-       Managed dependencies using npm
-    
-    2: Authentication
-        The authentication is done using JWT tokens.
-        
-    3: Data Models and Database
-        i. The Database used in the project is MongoDB. It stores the Username, Hashed Password, email, and the query which user enters 
-        ii. Implemented CRUD operations for classification rules.
-    
-    4: User-Defined Classification Rules
-        i. After a user login successfully he/she can add their queries. Which is stored in the database
-        ii. The query or the classification rules are provided in the following format, below are some examples:
-             Ex: "rule count('a') > 4 end" // note that rule must start with "rule" and must end with "end"
-        iii. The processing of DSL is coded such that it will execute only if the above condition is met.
-        
-    5: Classification DSL:
-        i. Designed a Domain Specific Language (DSL) for rules.
-        ii. When a user enters a query. Lexer converts queries into tokens the parser uses the tokens and generates an AST tree and the interpreter processes the AST tree to produce output
+## TABLE OF CONTENT:
+- [🎯 Purpose](#-purpose)
+- [👩🏻‍💻 Features](#-features)
+- [🛠️ Tools & Technologies](#-tools)
+- [📥 Installation](#-installation)
+- [🚀 Usage](#-usage)
+- [📧 Endpoints](#-endpoints)
+- [🧪 Testing](#-testing)
+- [🖼️ Images](#-images)
+- [📄 License](#-license)
 
-INSTALLATION:
+## 🎯 Purpose
+This project's main objective is to offer a real-time, scalable data processing system that allows users to create custom classification rules. This project guarantees that user-defined rules may be applied promptly to incoming data, making the system ideal for a variety of real-world applications. It accomplishes this by integrating JWT for secure authentication, a strong database for rule storage, and real-time data streaming capabilities.
 
-    1: Clone the Repository
-            code: https://github.com/diggu17/Live-stream-api.git
 
-    2: Navigate to the project directory:
-            ex: cd project-name
-    3: Install dependencies:
-            code: npm install
+## 👩🏻‍💻 Features
+Some of the key features of the projects are:
 
-USAGE:
+i. JWT Authentication
 
-    1: To run the project use:
-        "npm start"
-    2: To run Tests:
-        "npm test"
+    ->JWT Authentication Middleware: Middleware has been integrated to handle JWT authentication, ensuring secure access to protected routes.
+    ->Token Validation: All incoming requests are validated to ensure they contain a valid JWT token in the header, safeguarding against unauthorized access.
+    ->User Signup and Login Endpoints: I have created endpoints for user signup and login, enabling users to securely register and authenticate.
 
-FEATURES:
+ii. Data Models and Database Integration
+    The project includes a comprehensive design and implementation of the database schema, focusing on user-defined rules and associated operations
 
-    Some of the key features of the projects are:
+    -> Schema design for storing user and rule data.
+    -> CRUD operations for managing user-defined classification rules.
+    -> Integration with a database for persistent storage.
 
-    i. JWT Authentication
-        The project includes JWT (JSON Web Token) authentication to ensure secure and reliable user sessions. Key features of this implementation include:
-        
-        ->JWT Authentication Middleware: Middleware has been integrated to handle JWT authentication, ensuring secure access to protected routes.
-        ->Token Validation: All incoming requests are validated to ensure they contain a valid JWT token in the header, safeguarding against unauthorized access.
-        ->User Signup and Login Endpoints: I have created endpoints for user signup and login, enabling users to securely register and authenticate.
+iii. User-Defined Classification Rules
 
-    ii. Data Models and Database
-        The project includes a comprehensive design and implementation of the database schema, focusing on user-defined rules and associated operations
+    -> Parser to interpret and validate user-defined rules.
+    -> API endpoints for rule management (create, read, update, delete).
+
+iv. Real-time Data Processing    
+
+    -> WebSocket or Server-Sent Events (SSE) for live data streaming.
+    -> Real-time classification engine to process data streams using defined rules
+
+## 🛠️ Tools & Technologies
+- **Backend**: Express, Node.js
+- **Database**: MongoDB
+- **Authentication**: JSON Web Token (JWT)
+- **Real-Time Processing**: WebSocket
+- **Unit/Integration Testing**: Jest with Supertest
+- **Load Testing**: Apache JMeter
+- **API Request Platform**: VS Code - Postman
+
+## 📥 INSTALLATION
+To get started with the Real-time Data Classification API, follow the below steps:
+#### Clone the repository
+```bash
+git clone https://github.com/diggu17/Live-stream-api.git
+cd Live-stream-api
+```
+#### Install dependencies using npm
+```bash
+npm install
+```
+
+
+## 📧 Endpoints
+
+**Create an User**:
+  ```bash
+  http://{{host}}:{{port}}/signup
+  ```
+- **Login a user**:
+  ```bash
+  http://{{host}}:{{port}}/login
+  ```
+- **Create a Rule**:
+  ```bash
+  http://{{host}}:{{port}}/addQ   # Adding New Rule
+  ````
+- **Update a Rule**:
+  ```bash
+  http://{{host}}:{{port}}/updateQ    # Updating a rule 
+  ```
+- **Delete a Rule**:
+  ```bash
+  http://{{host}}:{{port}}/deleteQ    # Deleting a rule
+  ```
+ **running query by a user**:
+  ```bash
+  http://{{host}}:{{port}}/run-query 
+  ```
+
 
             
