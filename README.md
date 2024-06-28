@@ -11,7 +11,7 @@ The goal of this project is to provide a stable and adaptable platform that can 
 - [🚀 Usage](#-usage)
 - [📧 Endpoints](#-endpoints)
 - [🧪 Testing](#-testing)
-- [🖼️ Images](#-images)
+- [🖼️ Postman](#-images)
 - [📄 License](#-license)
 
 ## 🎯 Purpose
@@ -88,10 +88,18 @@ npm install
   ```bash
   http://{{host}}:{{port}}/deleteQ    # Deleting a rule
   ```
- **running query by a user**:
+ - **running query by a user**:
   ```bash
   http://{{host}}:{{port}}/run-query 
   ```
+
+## 🧪 Testing
+Run below coomand to run unit tests , integration tests and see the code covarage for this project
+ ```bash
+  npm test
+ ```
+
+## 🖼️ Postman 
 
 
             
