@@ -11,6 +11,7 @@ The goal of this project is to provide a stable and adaptable platform that can 
 - [📧 Endpoints](#-endpoints)
 - [🧪 Testing](#-testing)
 - [🖼️ Postman](#-images)
+- [🖼️ Contact](#-contact)
 
 ## 🎯 Purpose
 This project's main objective is to offer a real-time, scalable data processing system that allows users to create custom classification rules. This project guarantees that user-defined rules may be applied promptly to incoming data, making the system ideal for a variety of real-world applications. It accomplishes this by integrating JWT for secure authentication, a strong database for rule storage, and real-time data streaming capabilities.
@@ -110,3 +111,12 @@ Run below coomand to run unit tests , integration tests and see the code covarag
 ![Alt text](images/deletingquery.png)
 #### Testing
 ![Alt text](images/Testing.png)
+
+
+## 📞 Contact
+
+Author Name - Digvijay Singh Thakur
+
+Email - digvijaysinghtahkur17@gmail.com
+
+ 
