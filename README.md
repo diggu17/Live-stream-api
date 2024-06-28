@@ -119,4 +119,8 @@ Author Name - Digvijay Singh Thakur
 
 Email - digvijaysinghtahkur17@gmail.com
 
+
+## Metric of Load
+Using express gives 450 HTTP request with ramp up period of 1sec 
+
  
